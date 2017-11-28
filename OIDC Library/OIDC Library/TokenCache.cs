@@ -14,7 +14,21 @@ namespace ChaoticPixel.OIDC
         private string _refreshToken;
         private AuthenticationHeaderValue _bearerHeader;
 
+        private OpenIDConnect _oidc;
+
         public Guid GUID { get; }
+
+        public OpenIDConnect OIDC
+        {
+            get
+            {
+                return _oidc;
+            }
+            internal set
+            {
+                _oidc = value;
+            }
+        }
 
         public TokenCache()
         {
