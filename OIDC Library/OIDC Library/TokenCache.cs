@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Threading;
 
@@ -10,8 +11,9 @@ namespace ChaoticPixel.OIDC
 
         private Guid _cacheGuid;
         private string _authorizationCode;
-        private string _accessToken;
-        private string _refreshToken;
+        private JwtSecurityToken _idToken;
+        private JwtSecurityToken _accessToken;
+        private JwtSecurityToken _refreshToken;
         private AuthenticationHeaderValue _bearerHeader;
 
         private OpenIDConnect _oidc;
@@ -50,46 +52,61 @@ namespace ChaoticPixel.OIDC
             return temp;
         }
 
-        public void SetAccessToken(string accessToken)
+        public void SetIDToken(JwtSecurityToken idToken)
+        {
+            _lock.EnterWriteLock();
+            _idToken = idToken;
+            _lock.ExitWriteLock();
+        }
+
+        public JwtSecurityToken GetIDToken()
+        {
+            _lock.EnterReadLock();
+            JwtSecurityToken temp = _idToken;
+            _lock.ExitReadLock();
+            return temp;
+        }
+
+        public void SetAccessToken(JwtSecurityToken accessToken)
         {
             _lock.EnterWriteLock();
             _accessToken = accessToken;
             _lock.ExitWriteLock();
         }
 
-        public string GetAccessToken()
+        public JwtSecurityToken GetAccessToken()
         {
             _lock.EnterReadLock();
-            string temp = _accessToken;
+            JwtSecurityToken temp = _accessToken;
             _lock.ExitReadLock();
             return temp;
         }
 
-        public void SetRefreshToken(string refreshToken)
+        public void SetRefreshToken(JwtSecurityToken refreshToken)
         {
             _lock.EnterWriteLock();
             _refreshToken = refreshToken;
             _lock.ExitWriteLock();
         }
 
-        public string GetRefreshToken()
+        public JwtSecurityToken GetRefreshToken()
         {
             _lock.EnterReadLock();
-            string temp = _refreshToken;
+            JwtSecurityToken temp = _refreshToken;
             _lock.ExitReadLock();
             return temp;
         }
 
         public AuthenticationHeaderValue GetBearerHeader()
         {
-            if (string.IsNullOrEmpty(_accessToken))
+            if (_accessToken == null)
             {
                 return null;
             }
             if (_bearerHeader == null)
             {
                 _lock.EnterReadLock();
-                _bearerHeader = new AuthenticationHeaderValue("Bearer", _accessToken);
+                _bearerHeader = new AuthenticationHeaderValue("Bearer", _accessToken.RawData);
                 _lock.ExitReadLock();
             }
             return _bearerHeader;

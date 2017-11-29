@@ -1,39 +1,30 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.IdentityModel.Protocols;
 using System;
-using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
+using System.Security.Claims;
 
 namespace ChaoticPixel.OIDC.Core
 {
     internal sealed class TokenValidator : IDisposable
     {
         private string _token;
-        private string _header;
-        private string _payload;
-        private byte[] _signature;
 
-        private string _algorithm;
-        private string _privateKey;
+        private OpenIdConnectConfiguration _config;
 
-        private OpenIDConnectConfig _config;
-
-        public TokenValidator(string token, OpenIDConnectConfig config)
+        public TokenValidator(string token, OpenIdConnectConfiguration config)
         {
             _token = token;
-            string[] parts = _token.Split('.');
-
-            _header = parts[0];
-            _payload = parts[1];
-            _signature = Base64UrlDecode(parts[2]);
-
             _config = config;
         }
 
-        public bool Validate(string nonce)
+        public JwtSecurityToken Validate(string nonce)
         {
-            return (ValidateNonce(nonce) && ValidateSignature());
+            if (!ValidateNonce(nonce))
+            {
+                return null;
+            }
+            return ValidateSignature();
         }
 
         private bool ValidateNonce(string nonce)
@@ -48,28 +39,21 @@ namespace ChaoticPixel.OIDC.Core
             return false;
         }
 
-        private bool ValidateSignature()
+        private JwtSecurityToken ValidateSignature()
         {
-            JObject privateKeysJObject = HTTPRequest.GetWeb(_config.JWKSEndpoint);
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
 
-            byte[] bytesToSign = Encoding.UTF8.GetBytes(string.Concat(_header, ".", _payload));
-            _algorithm = (string)JObject.Parse(Encoding.UTF8.GetString(Base64UrlDecode(_header)))["alg"];
-            string keyId = (string)JObject.Parse(Encoding.UTF8.GetString(Base64UrlDecode(_header)))["kid"];
-
-            string key = privateKeysJObject.Values().First(token => token["kid"].ToString() == keyId)["n"].ToString();
-            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-
-            HMACSHA256 sha = new HMACSHA256(keyBytes);
-            byte[] signature = sha.ComputeHash(bytesToSign);
-
-            string decodedCrypto = Convert.ToBase64String(_signature);
-            string decodedSignature = Convert.ToBase64String(signature);
-
-            if (decodedCrypto == decodedSignature)
+            TokenValidationParameters validationParameters = new TokenValidationParameters
             {
-                return true;
-            }
-            return false;
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                IssuerSigningTokens = _config.SigningTokens,
+                ValidateLifetime = true
+            };
+
+            SecurityToken jwt;
+            ClaimsPrincipal principal = handler.ValidateToken(_token, validationParameters, out jwt);
+            return jwt as JwtSecurityToken;
         }
 
         private static string Base64UrlEncode(byte[] input)
@@ -115,11 +99,6 @@ namespace ChaoticPixel.OIDC.Core
                 }
 
                 _token = null;
-                _header = null;
-                _payload = null;
-                _signature = null;
-                _privateKey = null;
-                _algorithm = null;
                 _config = null;
 
                 disposedValue = true;
