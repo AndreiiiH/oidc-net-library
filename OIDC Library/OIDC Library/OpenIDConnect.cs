@@ -22,6 +22,7 @@ namespace ChaoticPixel.OIDC
             _configManager = new ConfigurationManager<OpenIdConnectConfiguration>(string.Format("https://login.microsoftonline.com/{0}/v2.0/.well-known/openid-configuration", azureTenant));
 
             _clientId = clientId;
+            _clientSecret = clientSecret;
             _tokenCache = tokenCache;
             tokenCache.OIDC = this;
             _nonce = Nonce.Generate();
@@ -32,7 +33,7 @@ namespace ChaoticPixel.OIDC
             _config = await _configManager.GetConfigurationAsync();
         }
 
-        public string GetAuthorizationURL(string responseType, string redirectUri, string responseMode, string scopes, string state, string nonce)
+        public string GetAuthorizationURL(string responseType, string redirectUri, string responseMode, string scopes, string state)
         {
             if (_tokenCache == null)
             {
@@ -63,7 +64,7 @@ namespace ChaoticPixel.OIDC
             _tokenCache.SetScopes(responseJObject["scope"].ToString());
             _tokenCache.SetValidThru(int.Parse(responseJObject["expires_in"].ToString()));
             _tokenCache.SetAccessToken(new JwtSecurityToken(responseJObject["access_token"].ToString()));
-            _tokenCache.SetRefreshToken(new JwtSecurityToken(responseJObject["refresh_token"].ToString()));
+            _tokenCache.SetRefreshToken(responseJObject["refresh_token"].ToString());
         }
 
         public async Task RefreshToken(string redirectUri)
@@ -72,7 +73,7 @@ namespace ChaoticPixel.OIDC
             {
                 { "client_id", _clientId },
                 { "scope", _tokenCache.GetScopes() },
-                { "refresh_token", _tokenCache.GetRefreshToken().RawData },
+                { "refresh_token", _tokenCache.GetRefreshToken() },
                 { "redirect_uri", redirectUri },
                 { "grant_type", "refresh_token" },
                 { "client_secret", _clientSecret }
@@ -84,7 +85,7 @@ namespace ChaoticPixel.OIDC
 
             _tokenCache.SetValidThru(int.Parse(responseJObject["expires_in"].ToString()));
             _tokenCache.SetAccessToken(new JwtSecurityToken(responseJObject["access_token"].ToString()));
-            _tokenCache.SetRefreshToken(new JwtSecurityToken(responseJObject["refresh_token"].ToString()));
+            _tokenCache.SetRefreshToken(responseJObject["refresh_token"].ToString());
         }
 
         public string GetLogoutUrl(string redirectUri)

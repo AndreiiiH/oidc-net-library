@@ -11,11 +11,16 @@ namespace ChaoticPixel.OIDC.Core
         private const string _PASSWORD = "ChaoticPixel:State";
         private const string _SALT = "Q2hhb3RpY1BpeGVsOlN0YXRl";
         private const string _INIT_VECTOR = "OFRna74m*aze01xY";
+        private static string _signature;
+
+        static State()
+        {
+            _signature = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", _created.ToString(), _SALT)));
+        }
 
         public static string Encrypt(string state)
         {
-            string signature = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", _created.ToString(), _SALT)));
-            string formatted = string.Format("state_{0}:signature_{1}", state, signature);
+            string formatted = string.Format("state_{0}:signature_{1}", state, _signature);
             return Convert.ToBase64String(EncryptToBytes(formatted));
         }
 
@@ -30,13 +35,8 @@ namespace ChaoticPixel.OIDC.Core
             string[] formattedParts = state.Split(':');
             string[] stateParts = formattedParts[0].Split('_');
             string[] signatureParts = formattedParts[1].Split('_');
-            string[] signatureSubParts = signatureParts[1].Split(':');
 
-            if (DateTime.Parse(signatureSubParts[0]) != _created)
-            {
-                return string.Empty;
-            }
-            if (signatureSubParts[1] != _SALT)
+            if (signatureParts[1] != _signature)
             {
                 return string.Empty;
             }

@@ -14,7 +14,7 @@ namespace ChaoticPixel.OIDC
         private string _authorizationCode;
         private JwtSecurityToken _idToken;
         private JwtSecurityToken _accessToken;
-        private JwtSecurityToken _refreshToken;
+        private string _refreshToken;
         private AuthenticationHeaderValue _bearerHeader;
 
         private DateTime _validThru;
@@ -100,17 +100,17 @@ namespace ChaoticPixel.OIDC
             return temp;
         }
 
-        public void SetRefreshToken(JwtSecurityToken refreshToken)
+        public void SetRefreshToken(string refreshToken)
         {
             _lock.EnterWriteLock();
             _refreshToken = refreshToken;
             _lock.ExitWriteLock();
         }
 
-        public JwtSecurityToken GetRefreshToken()
+        public string GetRefreshToken()
         {
             _lock.EnterReadLock();
-            JwtSecurityToken temp = _refreshToken;
+            string temp = _refreshToken;
             _lock.ExitReadLock();
             return temp;
         }
