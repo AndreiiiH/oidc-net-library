@@ -1,42 +1,23 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ChaoticPixel.OIDC
 {
     public static class HTTPRequest
     {
-        public static JObject GetWeb(string url)
+        public async static Task<HttpResponseMessage> Post(string url, HttpContent httpContent)
         {
-            using (WebClient web = new WebClient())
+            using (HttpClient http = new HttpClient())
             {
-                JObject responseJObject = null;
-
-                try
+                HttpResponseMessage response = await http.PostAsync(url, httpContent);
+                if (response.IsSuccessStatusCode)
                 {
-                    using (Stream stream = web.OpenRead(url))
-                    {
-                        StreamReader reader = new StreamReader(stream);
-                        string response = reader.ReadToEnd();
-                        responseJObject = JObject.Parse(response);
-                    }
+                    return response;
                 }
-                catch (WebException ex)
-                {
-                    if (ex.Response is HttpWebResponse)
-                    {
-                        switch (((HttpWebResponse)ex.Response).StatusCode)
-                        {
-                            case HttpStatusCode.NotFound:
-                                responseJObject = null;
-                                break;
-                            default:
-                                throw ex;
-                        }
-                    }
-                }
-
-                return responseJObject;
+                throw new InvalidDataException(response.StatusCode.ToString());
             }
         }
     }

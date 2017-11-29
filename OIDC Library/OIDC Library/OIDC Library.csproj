@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="Core\Nonce.cs" />
     <Compile Include="Core\RandomProvider.cs" />
+    <Compile Include="Core\State.cs" />
     <Compile Include="Core\TokenValidator.cs" />
     <Compile Include="HTTPRequest.cs" />
     <Compile Include="OpenIDConnect.cs" />

@@ -10,11 +10,14 @@ namespace ChaoticPixel.OIDC
         private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
         private Guid _cacheGuid;
+        private string _scopes;
         private string _authorizationCode;
         private JwtSecurityToken _idToken;
         private JwtSecurityToken _accessToken;
         private JwtSecurityToken _refreshToken;
         private AuthenticationHeaderValue _bearerHeader;
+
+        private DateTime _validThru;
 
         private OpenIDConnect _oidc;
 
@@ -35,6 +38,21 @@ namespace ChaoticPixel.OIDC
         public TokenCache()
         {
             _cacheGuid = Guid.NewGuid();
+        }
+
+        public void SetScopes(string scopes)
+        {
+            _lock.EnterWriteLock();
+            _scopes = scopes;
+            _lock.ExitWriteLock();
+        }
+
+        public string GetScopes()
+        {
+            _lock.EnterReadLock();
+            string temp = _scopes;
+            _lock.ExitReadLock();
+            return temp;
         }
 
         public void SetAuthorizationCode(string authorizationCode)
@@ -93,6 +111,21 @@ namespace ChaoticPixel.OIDC
         {
             _lock.EnterReadLock();
             JwtSecurityToken temp = _refreshToken;
+            _lock.ExitReadLock();
+            return temp;
+        }
+
+        public void SetValidThru(int offset)
+        {
+            _lock.EnterWriteLock();
+            _validThru = DateTime.UtcNow.AddSeconds(offset);
+            _lock.ExitWriteLock();
+        }
+
+        public DateTime GetValidThru()
+        {
+            _lock.EnterReadLock();
+            DateTime temp = _validThru;
             _lock.ExitReadLock();
             return temp;
         }

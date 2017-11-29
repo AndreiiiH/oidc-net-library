@@ -1,7 +1,9 @@
 ﻿using ChaoticPixel.OIDC.Core;
 using Microsoft.IdentityModel.Protocols;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ChaoticPixel.OIDC
@@ -13,8 +15,9 @@ namespace ChaoticPixel.OIDC
         private TokenCache _tokenCache;
         private string _nonce;
         private string _clientId;
+        private string _clientSecret;
 
-        public OpenIDConnect(string azureTenant, string clientId, TokenCache tokenCache)
+        public OpenIDConnect(string azureTenant, string clientId, string clientSecret, TokenCache tokenCache)
         {
             _configManager = new ConfigurationManager<OpenIdConnectConfiguration>(string.Format("https://login.microsoftonline.com/{0}/v2.0/.well-known/openid-configuration", azureTenant));
 
@@ -42,6 +45,48 @@ namespace ChaoticPixel.OIDC
             return url;
         }
 
+        public async Task GetTokens(string scopes, string redirectUri)
+        {
+            Dictionary<string, string> requestContent = new Dictionary<string, string>()
+            {
+                { "client_id", _clientId },
+                { "scope", scopes },
+                { "code", _tokenCache.GetAuthorizationCode() },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "authorization_code" },
+                { "client_secret", _clientSecret }
+            };
+            HttpResponseMessage response = await HTTPRequest.Post(_config.TokenEndpoint, new FormUrlEncodedContent(requestContent));
+            string responseJSON = await response.Content.ReadAsStringAsync();
+            JObject responseJObject = JObject.Parse(responseJSON);
+
+            _tokenCache.SetScopes(responseJObject["scope"].ToString());
+            _tokenCache.SetValidThru(int.Parse(responseJObject["expires_in"].ToString()));
+            _tokenCache.SetAccessToken(new JwtSecurityToken(responseJObject["access_token"].ToString()));
+            _tokenCache.SetRefreshToken(new JwtSecurityToken(responseJObject["refresh_token"].ToString()));
+        }
+
+        public async Task RefreshToken(string redirectUri)
+        {
+            Dictionary<string, string> requestContent = new Dictionary<string, string>()
+            {
+                { "client_id", _clientId },
+                { "scope", _tokenCache.GetScopes() },
+                { "refresh_token", _tokenCache.GetRefreshToken().RawData },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "refresh_token" },
+                { "client_secret", _clientSecret }
+            };
+
+            HttpResponseMessage response = await HTTPRequest.Post(_config.TokenEndpoint, new FormUrlEncodedContent(requestContent));
+            string responseJSON = await response.Content.ReadAsStringAsync();
+            JObject responseJObject = JObject.Parse(responseJSON);
+
+            _tokenCache.SetValidThru(int.Parse(responseJObject["expires_in"].ToString()));
+            _tokenCache.SetAccessToken(new JwtSecurityToken(responseJObject["access_token"].ToString()));
+            _tokenCache.SetRefreshToken(new JwtSecurityToken(responseJObject["refresh_token"].ToString()));
+        }
+
         public string GetLogoutUrl(string redirectUri)
         {
             string url = string.Format("{0}?post_logout_redirect_uri={1}", _config.EndSessionEndpoint, redirectUri);
@@ -55,11 +100,6 @@ namespace ChaoticPixel.OIDC
             {
                 return validator.Validate(_nonce);
             }
-        }
-
-        private JObject GetOIDCConfiguration(string configurationEndpoint)
-        {
-            return HTTPRequest.GetWeb(configurationEndpoint);
         }
     }
 }

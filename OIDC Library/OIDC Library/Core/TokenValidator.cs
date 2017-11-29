@@ -56,37 +56,6 @@ namespace ChaoticPixel.OIDC.Core
             return jwt as JwtSecurityToken;
         }
 
-        private static string Base64UrlEncode(byte[] input)
-        {
-            string output = Convert.ToBase64String(input);
-            output = output.Split('=')[0];
-            output = output.Replace('+', '-');
-            output = output.Replace('/', '_');
-            return output;
-        }
-
-        private static byte[] Base64UrlDecode(string input)
-        {
-            string output = input;
-            output = output.Replace('-', '+');
-            output = output.Replace('_', '/');
-            switch (output.Length % 4)
-            {
-                case 0:
-                    break;
-                case 2:
-                    output += "==";
-                    break;
-                case 3:
-                    output += "=";
-                    break;
-                default:
-                    throw new Exception("Illegal Base64URL string!");
-            }
-            byte[] converted = Convert.FromBase64String(output);
-            return converted;
-        }
-
         private bool disposedValue = false;
 
         void Dispose(bool disposing)
