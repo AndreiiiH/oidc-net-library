@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChaoticPixel.OIDC
 {
-    public static class HTTPRequest
+    public static class HttpRequest
     {
         public async static Task<HttpResponseMessage> Post(string url, HttpContent httpContent)
         {

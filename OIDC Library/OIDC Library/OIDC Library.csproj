@@ -71,12 +71,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Nonce.cs" />
+    <Compile Include="Core\OpenIdConfig.cs" />
     <Compile Include="Core\RandomProvider.cs" />
     <Compile Include="Cryptography\RS256.cs" />
     <Compile Include="Core\State.cs" />
     <Compile Include="Core\TokenValidator.cs" />
-    <Compile Include="HTTPRequest.cs" />
-    <Compile Include="OpenIDConnect.cs" />
+    <Compile Include="HttpRequest.cs" />
+    <Compile Include="OpenIdConnect.cs" />
     <Compile Include="TokenCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

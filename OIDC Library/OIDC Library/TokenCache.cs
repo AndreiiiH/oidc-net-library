@@ -7,9 +7,8 @@ namespace ChaoticPixel.OIDC
 {
     public sealed class TokenCache
     {
-        private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
-        private Guid _cacheGuid;
         private string _scopes;
         private string _authorizationCode;
         private JwtSecurityToken _idToken;
@@ -19,25 +18,13 @@ namespace ChaoticPixel.OIDC
 
         private DateTime _validThru;
 
-        private OpenIDConnect _oidc;
+        public Guid Guid { get; }
 
-        public Guid GUID { get; }
-
-        public OpenIDConnect OIDC
-        {
-            get
-            {
-                return _oidc;
-            }
-            internal set
-            {
-                _oidc = value;
-            }
-        }
+        public OpenIdConnect Oidc { get; internal set; }
 
         public TokenCache()
         {
-            _cacheGuid = Guid.NewGuid();
+            Guid = Guid.NewGuid();
         }
 
         public void SetScopes(string scopes)
@@ -70,14 +57,14 @@ namespace ChaoticPixel.OIDC
             return temp;
         }
 
-        public void SetIDToken(JwtSecurityToken idToken)
+        public void SetIdToken(JwtSecurityToken idToken)
         {
             _lock.EnterWriteLock();
             _idToken = idToken;
             _lock.ExitWriteLock();
         }
 
-        public JwtSecurityToken GetIDToken()
+        public JwtSecurityToken GetIdToken()
         {
             _lock.EnterReadLock();
             JwtSecurityToken temp = _idToken;
