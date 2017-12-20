@@ -3,12 +3,12 @@
   <metadata>
     <title>Chaotic Pixel's OIDC .NET Library</title>
     <id>ChaoticPixel.OIDC</id>
-      <version>1.2.2-alpha</version>
+    <version>1.2.3-alpha</version>
     <authors>Andrei Hava</authors>
     <owners>AndreiiiH</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Provides an easy-to-use interface for OIDC-dependant applications.</description>
-      <releaseNotes>Fixed a minor async bug.</releaseNotes>
+    <releaseNotes>Adds an simple encryption algorithm that takes a custom password.</releaseNotes>
     <copyright>Copyright © 2017 Chaotic Pixel</copyright>
     <tags>web utility oidc oauth2</tags>
     <dependencies>

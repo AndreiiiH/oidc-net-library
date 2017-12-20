@@ -24,12 +24,43 @@ namespace ChaoticPixel.OIDC.Cryptography
             return Convert.ToBase64String(EncryptToBytes(input));
         }
 
+        public static string Encrypt(string input, string password)
+        {
+            return Encoding.ASCII.GetString(EncryptToBytesPassword(input, password));
+        }
+
         public static string Decrypt(string input)
         {
             byte[] encryptedState = Convert.FromBase64String(input.Replace(' ', '+'));
             return DecryptFromBytes(encryptedState).TrimEnd('\0');
         }
 
+        public static string Decrypt(string input, string password)
+        {
+            return DecryptFromBytesPassword(Encoding.ASCII.GetBytes(input), password);
+        }
+
+        private static byte[] EncryptToBytesPassword(string input, string password)
+        {
+            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+            byte[] output;
+
+            SymmetricAlgorithm symmetricAlgorithm = DES.Create();
+            symmetricAlgorithm.Key = Encoding.ASCII.GetBytes(password);
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, symmetricAlgorithm.CreateEncryptor(),
+                    CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(inputBytes, 0, inputBytes.Length);
+                }
+
+                output = memoryStream.ToArray();
+            }
+
+            return output;
+        }
 
         private static byte[] EncryptToBytes(string input)
         {
@@ -58,6 +89,27 @@ namespace ChaoticPixel.OIDC.Cryptography
                     }
                 }
             }
+        }
+
+        private static string DecryptFromBytesPassword(byte[] input, string password)
+        {
+            string result;
+
+            SymmetricAlgorithm symmetricAlgorithm = DES.Create();
+            symmetricAlgorithm.Key = Encoding.ASCII.GetBytes(password);
+
+            using (MemoryStream memoryStream = new MemoryStream(input))
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, symmetricAlgorithm.CreateDecryptor(),
+                    CryptoStreamMode.Read))
+                {
+                    byte[] decrypted = new byte[input.Length];
+                    cryptoStream.Read(decrypted, 0, decrypted.Length);
+                    result = Encoding.ASCII.GetString(decrypted);
+                }
+            }
+
+            return result;
         }
 
         private static string DecryptFromBytes(byte[] input)
