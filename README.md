@@ -1,5 +1,7 @@
-[![NuGet Pre Release](https://img.shields.io/nuget/vpre/Microsoft.AspNet.Mvc.svg?style=flat-square)](https://www.nuget.org/packages/ChaoticPixel.OIDC)
+[![NuGet Pre Release](https://img.shields.io/nuget/vpre/ChaoticPixel.OIDC.svg?style=flat-square)](https://www.nuget.org/packages/ChaoticPixel.OIDC)
+[![NuGet](https://img.shields.io/nuget/dt/ChaoticPixel.OIDC.svg)](https://www.nuget.org/packages/ChaoticPixel.OIDC)
 [![GitHub issues](https://img.shields.io/github/issues/AndreiiiH/oidc-net-library.svg?style=flat-square)](https://github.com/AndreiiiH/oidc-net-library/issues)
+[![Build Status](https://travis-ci.org/AndreiiiH/oidc-net-library.svg?branch=master)](https://travis-ci.org/AndreiiiH/oidc-net-library)
 
 # Chaotic Pixel's OIDC Library for .NET v4.7.1
 
