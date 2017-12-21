@@ -1,4 +1,4 @@
 language: csharp
 solution: OIDC Library\OIDC Library.sln
 install:
-  - nuget restore "OIDC Library\packages.config"
+  - nuget restore "OIDC Library\OIDC Library\packages.config"
