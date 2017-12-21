@@ -12,11 +12,18 @@ namespace ChaoticPixel.OIDC.Cryptography
         private static readonly string _salt;
         private static readonly string _initVector;
 
+        private static string _pwdInitVector;
+
         static RS256()
         {
             _initVector = GenerateRandomString(16);
             _salt = GenerateRandomString(24);
             _password = GenerateRandomString(64);
+        }
+
+        public static void InitializeSimpleEncryption(string initialVector)
+        {
+            _pwdInitVector = initialVector;
         }
 
         public static string Encrypt(string input)
@@ -42,24 +49,30 @@ namespace ChaoticPixel.OIDC.Cryptography
 
         private static byte[] EncryptToBytesPassword(string input, string password)
         {
+            int keySize = password.Length;
+
             byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] output;
+            byte[] initialVector = Encoding.ASCII.GetBytes(_pwdInitVector);
+            byte[] key = new Rfc2898DeriveBytes(_password, initialVector).GetBytes(keySize / 8);
 
-            SymmetricAlgorithm symmetricAlgorithm = DES.Create();
-            symmetricAlgorithm.Key = Encoding.ASCII.GetBytes(password);
-
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (RijndaelManaged symmetricKey = new RijndaelManaged())
             {
-                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, symmetricAlgorithm.CreateEncryptor(),
-                    CryptoStreamMode.Write))
+                symmetricKey.Mode = CipherMode.CBC;
+
+                using (ICryptoTransform encryptor = symmetricKey.CreateEncryptor(key, initialVector))
                 {
-                    cryptoStream.Write(inputBytes, 0, inputBytes.Length);
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                        {
+                            cryptoStream.Write(inputBytes, 0, inputBytes.Length);
+                            cryptoStream.FlushFinalBlock();
+
+                            return memoryStream.ToArray();
+                        }
+                    }
                 }
-
-                output = memoryStream.ToArray();
             }
-
-            return output;
         }
 
         private static byte[] EncryptToBytes(string input)
@@ -93,23 +106,29 @@ namespace ChaoticPixel.OIDC.Cryptography
 
         private static string DecryptFromBytesPassword(byte[] input, string password)
         {
-            string result;
+            int keySize = password.Length;
 
-            SymmetricAlgorithm symmetricAlgorithm = DES.Create();
-            symmetricAlgorithm.Key = Encoding.ASCII.GetBytes(password);
+            byte[] outputBytes = new byte[input.Length];
+            byte[] initialVector = Encoding.ASCII.GetBytes(_pwdInitVector);
+            byte[] key = new Rfc2898DeriveBytes(_password, initialVector).GetBytes(keySize / 8);
 
-            using (MemoryStream memoryStream = new MemoryStream(input))
+            using (RijndaelManaged symmetricKey = new RijndaelManaged())
             {
-                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, symmetricAlgorithm.CreateDecryptor(),
-                    CryptoStreamMode.Read))
+                symmetricKey.Mode = CipherMode.CBC;
+
+                using (ICryptoTransform decryptor = symmetricKey.CreateDecryptor(key, initialVector))
                 {
-                    byte[] decrypted = new byte[input.Length];
-                    cryptoStream.Read(decrypted, 0, decrypted.Length);
-                    result = Encoding.ASCII.GetString(decrypted);
+                    using (MemoryStream memoryStream = new MemoryStream(input))
+                    {
+                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
+                        {
+                            int byteCount = cryptoStream.Read(outputBytes, 0, outputBytes.Length);
+
+                            return Encoding.ASCII.GetString(outputBytes, 0, byteCount);
+                        }
+                    }
                 }
             }
-
-            return result;
         }
 
         private static string DecryptFromBytes(byte[] input)
