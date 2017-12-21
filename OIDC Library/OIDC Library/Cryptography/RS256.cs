@@ -49,7 +49,16 @@ namespace ChaoticPixel.OIDC.Cryptography
 
         private static byte[] EncryptToBytesPassword(string input, string password)
         {
-            int keySize = password.Length;
+            int keySize = 256;
+
+            if (password.Length > 64)
+            {
+                password = password.Substring(0, 64);
+            }
+            else if (password.Length < 64)
+            {
+                password = password.PadRight(64, '#');
+            }
 
             byte[] inputBytes = Encoding.ASCII.GetBytes(input);
             byte[] initialVector = Encoding.ASCII.GetBytes(_pwdInitVector);
@@ -106,7 +115,16 @@ namespace ChaoticPixel.OIDC.Cryptography
 
         private static string DecryptFromBytesPassword(byte[] input, string password)
         {
-            int keySize = password.Length;
+            int keySize = 256;
+            
+            if (password.Length > 64)
+            {
+                password = password.Substring(0, 64);
+            }
+            else if (password.Length < 64)
+            {
+                password = password.PadRight(64, '#');
+            }
 
             byte[] outputBytes = new byte[input.Length];
             byte[] initialVector = Encoding.ASCII.GetBytes(_pwdInitVector);

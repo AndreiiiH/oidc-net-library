@@ -1,7 +1,6 @@
 [![NuGet Pre Release](https://img.shields.io/nuget/vpre/ChaoticPixel.OIDC.svg?style=flat-square)](https://www.nuget.org/packages/ChaoticPixel.OIDC)
 [![NuGet](https://img.shields.io/nuget/dt/ChaoticPixel.OIDC.svg?style=flat-square)](https://www.nuget.org/packages/ChaoticPixel.OIDC)
 [![GitHub issues](https://img.shields.io/github/issues/AndreiiiH/oidc-net-library.svg?style=flat-square)](https://github.com/AndreiiiH/oidc-net-library/issues)
-[![Build Status](https://travis-ci.org/AndreiiiH/oidc-net-library.svg?branch=master&style=flat-square)](https://travis-ci.org/AndreiiiH/oidc-net-library)
 
 # Chaotic Pixel's OIDC Library for .NET v4.7.1
 
@@ -17,17 +16,17 @@ Installing the library is as easy as it gets! Simply open the NuGet Package Mang
 
 ### Package Manager
 ```
-PM> Install-Package ChaoticPixel.OIDC -Version 1.2.3-alpha 
+PM> Install-Package ChaoticPixel.OIDC -Version <LATEST> 
 ```
 
 ### .NET CLI
 ```
-> dotnet add package ChaoticPixel.OIDC --version 1.2.3-alpha 
+> dotnet add package ChaoticPixel.OIDC --version <LATEST> 
 ```
 
 ### Paket CLI
 ```
-> paket add ChaoticPixel.OIDC --version 1.2.3-alpha 
+> paket add ChaoticPixel.OIDC --version <LATEST> 
 ```
 
 # Setting up the Library
