@@ -11,6 +11,7 @@
     <releaseNotes>Adds an simple encryption algorithm that takes a custom password.</releaseNotes>
     <copyright>Copyright © 2017 Chaotic Pixel</copyright>
     <tags>web utility oidc oauth2</tags>
+    <projectUrl>https://raw.githubusercontent.com/AndreiiiH/oidc-net-library</projectUrl>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="10.0.3" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.4.403061554" />

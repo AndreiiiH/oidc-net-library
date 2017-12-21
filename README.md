@@ -1,7 +1,5 @@
-[![NuGet Pre Release](https://img.shields.io/nuget/vpre/Microsoft.AspNet.Mvc.svg?style=flat-square)](https://img.shields.io/maven-central/v/com.okta.jwt/okta-jwt-verifier.svg)](https://www.nuget.org/packages/ChaoticPixel.OIDC)
+[![NuGet Pre Release](https://img.shields.io/nuget/vpre/Microsoft.AspNet.Mvc.svg?style=flat-square)](https://www.nuget.org/packages/ChaoticPixel.OIDC)
 [![GitHub issues](https://img.shields.io/github/issues/AndreiiiH/oidc-net-library.svg?style=flat-square)](https://github.com/AndreiiiH/oidc-net-library/issues)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Support](https://img.shields.io/badge/support-Developer%20Forum-blue.svg)](https://devforum.okta.com/)
 
 # Chaotic Pixel's OIDC Library for .NET v4.7.1
 
@@ -53,9 +51,6 @@ OpenIdConnect oidc = new OpenIdConnect(config, tokenCache);
 ```
 __NOTE:__ `config` and `tokenCache` represent the instances of `OpenIdConfig` and `TokenCache` we created earlier.
 
-This helper class configures a JWT parser with the details found via the [OpenID Connect discovery endpoint](https://openid.net/specs/openid-connect-discovery-1_0.html).  The public keys used to validate the JWTs will also be retrieved 
-and cached automatically.
-
 And with that, the OIDC library is ready to use!
 
 ## Authorization Code Flow
@@ -77,7 +72,7 @@ __VARIABLES:__
 4. `scope` - The scope of the Authorization Code (Example: `"openid profile"`).
 5. `state` - The state that should be passed to the IDP. This gets returned with the auth code for validation purposes.
 
-__NOTE ABOUT STATE:__ You should __never__ send important information in the state of the request as it gets passed as cleartext in the URL. Instead, you can use our [RS256 Cryptography]() helper class for security.
+__NOTE ABOUT STATE:__ You should __never__ send important information in the state of the request as it gets passed as cleartext in the URL. Instead, you can use our [State Cryptography](https://github.com/AndreiiiH/oidc-net-library#state-encryptiondecryption) helper class for security.
 
 ### Consuming the Authorization Code (and ID Token)
 
@@ -103,7 +98,7 @@ Once you have the authorization code, you can get an access token that you can t
 await oidc.GetTokens(scope, redirectUri);
 ```
 
-__VARIABLES:___
+__VARIABLES:__
 1. `scope` - The scope of the Access Token. This should be no more than the scopes of the authorization code (Example: `"openid profile"`).
 2. `redirectUri` - Where the tokens should be returned. This doesn't particularly matter, as we're using a POST, however, the URL used here __has__ to be registered in the OIDC application.
 
