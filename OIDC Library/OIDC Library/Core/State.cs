@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IdentityModel.Metadata;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,13 +16,12 @@ namespace ChaoticPixel.OIDC.Core
 
         static State()
         {
-            string salt = RS256.GenerateRandomString(16);
-            _signature = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_created.ToString(CultureInfo.CurrentCulture)}:{salt}"));
+            _signature = RS256.GenerateRandomString(16);
         }
 
         public static string Encrypt(string input)
         {
-            string formatted = $"state_{input}:signature_{_signature}";
+            string formatted = $"{input}${_signature}";
             return RS256.Encrypt(formatted);
         }
 
@@ -32,15 +32,15 @@ namespace ChaoticPixel.OIDC.Core
 
         public static string Validate(string state)
         {
-            string[] formattedParts = state.Split(':');
-            string[] stateParts = formattedParts[0].Split('_');
-            string[] signatureParts = formattedParts[1].Split('_');
-
-            if (signatureParts[1] != _signature)
+            string[] stateParts = state.Split('$');
+            int similarity = String.Compare(_signature, stateParts[1], StringComparison.CurrentCulture);
+            
+            if (similarity == 0)
             {
-                return string.Empty;
+                return stateParts[1];
             }
-            return stateParts[1];
+            
+            return String.Empty;
         }
     }
 }

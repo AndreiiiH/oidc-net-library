@@ -10,169 +10,92 @@ namespace ChaoticPixel.OIDC.Cryptography
     {
         private static readonly string _password;
         private static readonly string _salt;
-        private static readonly string _initVector;
-
-        private static string _pwdInitVector;
 
         static RS256()
         {
-            _initVector = GenerateRandomString(16);
             _salt = GenerateRandomString(24);
             _password = GenerateRandomString(64);
         }
 
-        public static void InitializeSimpleEncryption(string initialVector)
+        public static string Encrypt(string data)
         {
-            _pwdInitVector = initialVector;
+            byte[] dataArray = Encoding.Unicode.GetBytes(data);
+            Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(_password, Encoding.Unicode.GetBytes(_salt));
+
+            byte[] encryptedData = Encrypt(dataArray, rfc.GetBytes(32), rfc.GetBytes(16));
+
+            return Convert.ToBase64String(encryptedData);
         }
 
-        public static string Encrypt(string input)
+        public static string Encrypt(string data, string password)
         {
-            return Convert.ToBase64String(EncryptToBytes(input));
+            byte[] dataArray = Encoding.Unicode.GetBytes(data);
+            Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+
+            byte[] encryptedData = Encrypt(dataArray, rfc.GetBytes(32), rfc.GetBytes(16));
+
+            return Convert.ToBase64String(encryptedData);
         }
 
-        public static string Encrypt(string input, string password)
+        public static byte[] Encrypt(byte[] data, byte[] key, byte[] initVector)
         {
-            return Encoding.ASCII.GetString(EncryptToBytesPassword(input, password));
-        }
-
-        public static string Decrypt(string input)
-        {
-            byte[] encryptedState = Convert.FromBase64String(input.Replace(' ', '+'));
-            return DecryptFromBytes(encryptedState).TrimEnd('\0');
-        }
-
-        public static string Decrypt(string input, string password)
-        {
-            return DecryptFromBytesPassword(Encoding.ASCII.GetBytes(input), password);
-        }
-
-        private static byte[] EncryptToBytesPassword(string input, string password)
-        {
-            int keySize = 256;
-
-            if (password.Length > 64)
+            using (Rijndael alg = Rijndael.Create())
             {
-                password = password.Substring(0, 64);
-            }
-            else if (password.Length < 64)
-            {
-                password = password.PadRight(64, '#');
-            }
+                alg.Key = key;
+                alg.IV = initVector;
+                alg.Mode = CipherMode.CBC;
+                alg.Padding = PaddingMode.Zeros;
 
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] initialVector = Encoding.ASCII.GetBytes(_pwdInitVector);
-            byte[] key = new Rfc2898DeriveBytes(_password, initialVector).GetBytes(keySize / 8);
-
-            using (RijndaelManaged symmetricKey = new RijndaelManaged())
-            {
-                symmetricKey.Mode = CipherMode.CBC;
-
-                using (ICryptoTransform encryptor = symmetricKey.CreateEncryptor(key, initialVector))
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    using (MemoryStream memoryStream = new MemoryStream())
+                    using (CryptoStream cs = new CryptoStream(ms, alg.CreateEncryptor(), CryptoStreamMode.Write))
                     {
-                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                        {
-                            cryptoStream.Write(inputBytes, 0, inputBytes.Length);
-                            cryptoStream.FlushFinalBlock();
-
-                            return memoryStream.ToArray();
-                        }
+                        cs.Write(data, 0, data.Length);
+                        cs.FlushFinalBlock();
                     }
+                    
+                    return ms.ToArray();
                 }
             }
         }
 
-        private static byte[] EncryptToBytes(string input)
+        public static string Decrypt(string data)
         {
-            int keySize = 256;
+            byte[] dataArray = Convert.FromBase64String(data.Replace(' ', '+'));
+            Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(_password, Encoding.Unicode.GetBytes(_salt));
 
-            byte[] stateBytes = Encoding.ASCII.GetBytes(input);
-            byte[] initialVector = Encoding.ASCII.GetBytes(_initVector);
-            byte[] salt = Encoding.ASCII.GetBytes(_salt);
-            byte[] key = new Rfc2898DeriveBytes(_password, salt).GetBytes(keySize / 8);
+            byte[] decryptedData = Decrypt(dataArray, rfc.GetBytes(32), rfc.GetBytes(16));
 
-            using (RijndaelManaged symmetricKey = new RijndaelManaged())
-            {
-                symmetricKey.Mode = CipherMode.CBC;
-
-                using (ICryptoTransform encryptor = symmetricKey.CreateEncryptor(key, initialVector))
-                {
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                        {
-                            cryptoStream.Write(stateBytes, 0, stateBytes.Length);
-                            cryptoStream.FlushFinalBlock();
-
-                            return memoryStream.ToArray();
-                        }
-                    }
-                }
-            }
+            return Encoding.Unicode.GetString(decryptedData);
         }
 
-        private static string DecryptFromBytesPassword(byte[] input, string password)
+        public static string Decrypt(string data, string password)
         {
-            int keySize = 256;
-            
-            if (password.Length > 64)
-            {
-                password = password.Substring(0, 64);
-            }
-            else if (password.Length < 64)
-            {
-                password = password.PadRight(64, '#');
-            }
+            byte[] dataArray = Convert.FromBase64String(data.Replace(' ', '+'));
+            Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
 
-            byte[] outputBytes = new byte[input.Length];
-            byte[] initialVector = Encoding.ASCII.GetBytes(_pwdInitVector);
-            byte[] key = new Rfc2898DeriveBytes(_password, initialVector).GetBytes(keySize / 8);
+            byte[] decryptedData = Decrypt(dataArray, rfc.GetBytes(32), rfc.GetBytes(16));
 
-            using (RijndaelManaged symmetricKey = new RijndaelManaged())
-            {
-                symmetricKey.Mode = CipherMode.CBC;
-
-                using (ICryptoTransform decryptor = symmetricKey.CreateDecryptor(key, initialVector))
-                {
-                    using (MemoryStream memoryStream = new MemoryStream(input))
-                    {
-                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-                        {
-                            int byteCount = cryptoStream.Read(outputBytes, 0, outputBytes.Length);
-
-                            return Encoding.ASCII.GetString(outputBytes, 0, byteCount);
-                        }
-                    }
-                }
-            }
+            return Encoding.Unicode.GetString(decryptedData);
         }
 
-        private static string DecryptFromBytes(byte[] input)
+        public static byte[] Decrypt(byte[] data, byte[] key, byte[] initVector)
         {
-            int keySize = 256;
-
-            byte[] outputBytes = new byte[input.Length];
-            byte[] salt = Encoding.ASCII.GetBytes(_salt);
-            byte[] initialVector = Encoding.ASCII.GetBytes(_initVector);
-            byte[] key = new Rfc2898DeriveBytes(_password, salt).GetBytes(keySize / 8);
-
-            using (RijndaelManaged symmetricKey = new RijndaelManaged())
+            using (Rijndael alg = Rijndael.Create())
             {
-                symmetricKey.Mode = CipherMode.CBC;
+                alg.Key = key;
+                alg.IV = initVector;
+                alg.Mode = CipherMode.CBC;
+                alg.Padding = PaddingMode.Zeros;
 
-                using (ICryptoTransform decryptor = symmetricKey.CreateDecryptor(key, initialVector))
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    using (MemoryStream memoryStream = new MemoryStream(input))
+                    using (CryptoStream cs = new CryptoStream(ms, alg.CreateDecryptor(), CryptoStreamMode.Write))
                     {
-                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-                        {
-                            int byteCount = cryptoStream.Read(outputBytes, 0, outputBytes.Length);
-
-                            return Encoding.ASCII.GetString(outputBytes, 0, byteCount);
-                        }
+                        cs.Write(data, 0, data.Length);
                     }
+
+                    return ms.ToArray();
                 }
             }
         }

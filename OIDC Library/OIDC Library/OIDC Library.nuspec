@@ -3,7 +3,7 @@
   <metadata>
     <title>Chaotic Pixel's OIDC .NET Library</title>
     <id>ChaoticPixel.OIDC</id>
-    <version>1.2.5-alpha</version>
+      <version>1.2.6-alpha</version>
     <authors>Andrei Hava</authors>
     <owners>AndreiiiH</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
