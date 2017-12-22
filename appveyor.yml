@@ -22,9 +22,9 @@ artifacts:
   name: Program Debug (PDB)
 deploy:
 - provider: NuGet
-  server: https://ci.appveyor.com/nuget/oidc-net-library-feed
+  server: https://www.myget.org/F/oidc-net-library/api/v2/package
   api_key:
-    secure: Cll6VlihZ1K9UuKG3GUsNKTLPXweSHKy/jd2QdEikZ8=
+    secure: 7HWPZvDdGe+s80/d4dYCJF0sL4Jq7j7l29WUQg6cfWYzF8PYcO6gGMBaGi+aRW2R
   skip_symbols: true
   artifact: /.*\.nupkg/
   on:
