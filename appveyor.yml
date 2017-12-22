@@ -1,0 +1,40 @@
+version: 1.2.{build}
+image: Visual Studio 2017
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+nuget:
+  project_feed: true
+before_build:
+- cmd: nuget restore "OIDC Library\OIDC Library.sln"
+build:
+  publish_nuget: true
+  verbosity: minimal
+before_package:
+- ps: .\NugetVersion.ps1
+artifacts:
+- path: OIDC Library\OIDC Library\bin\Debug\OIDC Library.dll
+  name: Library (DLL)
+- path: OIDC Library\OIDC Library\bin\Debug\OIDC Library.pdb
+  name: Program Debug (PDB)
+deploy:
+- provider: NuGet
+  server: https://ci.appveyor.com/nuget/oidc-net-library-feed
+  api_key:
+    secure: Cll6VlihZ1K9UuKG3GUsNKTLPXweSHKy/jd2QdEikZ8=
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  on:
+    branch: master
+- provider: NuGet
+  name: production
+  api_key:
+    secure: YOStUw4Z2f04anDnsTYgZmCapEZDp3dptdVoJAGYs2PUHdWAj6GTXeCqg/k6Tetp
+  skip_symbols: true
+  artifact: /.*\.nupkg/
+  on:
+    branch: master
+    appveyor_repo_tag: true
