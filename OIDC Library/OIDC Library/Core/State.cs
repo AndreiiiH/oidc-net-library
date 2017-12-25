@@ -37,7 +37,7 @@ namespace ChaoticPixel.OIDC.Core
             
             if (similarity == 0)
             {
-                return stateParts[1];
+                return stateParts[0];
             }
             
             return String.Empty;
