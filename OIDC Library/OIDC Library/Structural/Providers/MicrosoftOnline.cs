@@ -14,6 +14,10 @@ namespace ChaoticPixel.OIDC.Structural.Providers
             AuthorizationCode = new AuthorizationCode();
             AuthorizationCode.OpenIdConfig = Config;
             AuthorizationCode.TokenCache = TokenCache;
+            
+            ClientCredentials = new ClientCredentials();
+            ClientCredentials.OpenIdConfig = Config;
+            ClientCredentials.TokenCache = TokenCache;
         }
     }
 }

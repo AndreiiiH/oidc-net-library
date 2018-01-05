@@ -9,5 +9,6 @@ namespace ChaoticPixel.OIDC.Structural.Providers
         public TokenCache TokenCache { get; set; }
         
         public AuthorizationCode AuthorizationCode { get; set; }
+        public ClientCredentials ClientCredentials { get; set; }
     }
 }

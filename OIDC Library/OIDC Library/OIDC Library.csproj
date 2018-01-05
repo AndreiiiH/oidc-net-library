@@ -79,6 +79,7 @@
     <Compile Include="OpenIdConnect.cs" />
     <Compile Include="Structural\Flows\AuthorizationCode.cs" />
     <Compile Include="Structural\Flows\BaseFlow.cs" />
+    <Compile Include="Structural\Flows\ClientCredentials.cs" />
     <Compile Include="Structural\ProviderConfigs\MicrosoftOnlineConfig.cs" />
     <Compile Include="Structural\ProviderConfigs\OpenIdConfig.cs" />
     <Compile Include="Structural\Providers\BaseProvider.cs" />
