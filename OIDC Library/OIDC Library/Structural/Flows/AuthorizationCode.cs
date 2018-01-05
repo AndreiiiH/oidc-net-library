@@ -66,7 +66,7 @@ namespace ChaoticPixel.OIDC.Structural.Flows
                 return string.Empty;
             }
 
-            string url = $"{OpenIdConfig.Config.AuthorizationEndpoint}?client_id={OpenIdConfig.ClientId}&response_type=code&redirect_uri={OpenIdConfig.RedirectUri}&response_mode={OpenIdConfig.ResponseModeString}&scope={scope}&state={state}&nonce={OpenIdConfig.Nonce}";
+            string url = $"{OpenIdConfig.Config.AuthorizationEndpoint}?client_id={OpenIdConfig.ClientId}&response_type=code id_token&redirect_uri={OpenIdConfig.RedirectUri}&response_mode={OpenIdConfig.ResponseModeString}&scope={scope}&state={state}&nonce={OpenIdConfig.Nonce}";
 
             return url;
         }
