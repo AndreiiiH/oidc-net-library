@@ -71,13 +71,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Nonce.cs" />
-    <Compile Include="Core\OpenIdConfig.cs" />
     <Compile Include="Core\RandomProvider.cs" />
     <Compile Include="Cryptography\RS256.cs" />
     <Compile Include="Core\State.cs" />
     <Compile Include="Core\TokenValidator.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="OpenIdConnect.cs" />
+    <Compile Include="Structural\Flows\AuthorizationCode.cs" />
+    <Compile Include="Structural\Flows\BaseFlow.cs" />
+    <Compile Include="Structural\ProviderConfigs\MicrosoftOnlineConfig.cs" />
+    <Compile Include="Structural\ProviderConfigs\OpenIdConfig.cs" />
+    <Compile Include="Structural\Providers\BaseProvider.cs" />
+    <Compile Include="Structural\Providers\CustomProvider.cs" />
+    <Compile Include="Structural\Providers\MicrosoftOnline.cs" />
+    <Compile Include="Structural\Scaffolding\IAuthCodeFlow.cs" />
+    <Compile Include="Structural\Scaffolding\IBaseFlow.cs" />
+    <Compile Include="Structural\Scaffolding\IUserFlows.cs" />
     <Compile Include="TokenCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
