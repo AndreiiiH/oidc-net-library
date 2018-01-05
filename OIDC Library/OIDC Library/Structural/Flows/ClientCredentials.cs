@@ -8,7 +8,7 @@ namespace ChaoticPixel.OIDC.Structural.Flows
 {
     public class ClientCredentials : BaseFlow
     {
-        public async Task GetToken(string scope)
+        public async Task GetToken()
         {
             Dictionary<string, string> requestContent = new Dictionary<string, string>()
             {
