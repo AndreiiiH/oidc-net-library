@@ -18,17 +18,17 @@ Installing the library is as easy as it gets! Simply open the NuGet Package Mang
 
 ### Package Manager
 ```
-PM> Install-Package ChaoticPixel.OIDC -Version 1.3.4-alpha
+PM> Install-Package ChaoticPixel.OIDC -Version <LATEST>
 ```
 
 ### .NET CLI
 ```
-> dotnet add package ChaoticPixel.OIDC --version 1.3.4-alpha
+> dotnet add package ChaoticPixel.OIDC --version <LATEST>
 ```
 
 ### Paket CLI
 ```
-> paket add ChaoticPixel.OIDC --version 1.3.4-alpha
+> paket add ChaoticPixel.OIDC --version <LATEST>
 ```
 
 # Setting up the Library
