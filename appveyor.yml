@@ -28,7 +28,7 @@ deploy:
   skip_symbols: true
   artifact: /.*\.nupkg/
   on:
-    branch: master
+    branch: dev
 - provider: NuGet
   name: production
   api_key:
