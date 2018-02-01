@@ -1,7 +1,7 @@
-﻿using ChaoticPixel.OIDC.Structural.Flows;
-using ChaoticPixel.OIDC.Structural.ProviderConfigs;
+﻿using AndreiiiH.OIDC.Structural.Flows;
+using AndreiiiH.OIDC.Structural.ProviderConfigs;
 
-namespace ChaoticPixel.OIDC.Structural.Providers
+namespace AndreiiiH.OIDC.Structural.Providers
 {
     public class BaseProvider
     {
@@ -10,5 +10,23 @@ namespace ChaoticPixel.OIDC.Structural.Providers
         
         public AuthorizationCode AuthorizationCode { get; set; }
         public ClientCredentials ClientCredentials { get; set; }
+
+        public BaseProvider(OpenIdConfig config, TokenCache tokenCache)
+        {
+            Config = config;
+            TokenCache = tokenCache;
+
+            AuthorizationCode = new AuthorizationCode
+            {
+                OpenIdConfig = Config,
+                TokenCache = TokenCache
+            };
+
+            ClientCredentials = new ClientCredentials
+            {
+                OpenIdConfig = Config,
+                TokenCache = TokenCache
+            };
+        }
     }
 }

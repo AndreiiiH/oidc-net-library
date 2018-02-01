@@ -2,17 +2,17 @@
 using System.IdentityModel.Tokens;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ChaoticPixel.OIDC.Structural.Scaffolding;
+using AndreiiiH.OIDC.Structural.Scaffolding;
 using Newtonsoft.Json.Linq;
 
-namespace ChaoticPixel.OIDC.Structural.Flows
+namespace AndreiiiH.OIDC.Structural.Flows
 {
     public class AuthorizationCode : BaseFlow, IBaseFlow, IUserFlows, IAuthCodeFlow
     {
         
         public async Task GetToken(string scope)
         {
-            Dictionary<string, string> requestContent = new Dictionary<string, string>()
+            Dictionary<string, string> requestBody = new Dictionary<string, string>()
             {
                 { "client_id", OpenIdConfig.ClientId },
                 { "scope", scope },
@@ -21,7 +21,8 @@ namespace ChaoticPixel.OIDC.Structural.Flows
                 { "grant_type", "authorization_code" },
                 { "client_secret", OpenIdConfig.ClientSecret }
             };
-            HttpResponseMessage response = await HttpRequest.Post(OpenIdConfig.Config.TokenEndpoint, new FormUrlEncodedContent(requestContent));
+            
+            HttpResponseMessage response = await HttpRequest.Post(OpenIdConfig.Config.TokenEndpoint, new FormUrlEncodedContent(requestBody));
             string responseJson = await response.Content.ReadAsStringAsync();
             JObject responseJObject = JObject.Parse(responseJson);
 
@@ -33,7 +34,7 @@ namespace ChaoticPixel.OIDC.Structural.Flows
 
         public async Task RefreshToken()
         {
-            Dictionary<string, string> requestContent = new Dictionary<string, string>()
+            Dictionary<string, string> requestBody = new Dictionary<string, string>()
             {
                 { "client_id", OpenIdConfig.ClientId },
                 { "scope", TokenCache.GetScopes() },
@@ -43,13 +44,7 @@ namespace ChaoticPixel.OIDC.Structural.Flows
                 { "client_secret", OpenIdConfig.ClientSecret }
             };
 
-            HttpResponseMessage response = await HttpRequest.Post(OpenIdConfig.Config.TokenEndpoint, new FormUrlEncodedContent(requestContent));
-            string responseJson = await response.Content.ReadAsStringAsync();
-            JObject responseJObject = JObject.Parse(responseJson);
-
-            TokenCache.SetValidThru(int.Parse(responseJObject["expires_in"].ToString()));
-            TokenCache.SetAccessToken(new JwtSecurityToken(responseJObject["access_token"].ToString()));
-            TokenCache.SetRefreshToken(responseJObject["refresh_token"].ToString());
+            await PostToken(requestBody, TokenCache);
         }
 
         public string GetLogoutUrl(string postLogoutRedirectUrl)

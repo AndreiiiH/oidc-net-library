@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Protocols;
 
-namespace ChaoticPixel.OIDC.Structural.ProviderConfigs
+namespace AndreiiiH.OIDC.Structural.ProviderConfigs
 {
     public class OpenIdConfig
     {

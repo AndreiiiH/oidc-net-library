@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Threading;
 
-namespace ChaoticPixel.OIDC
+namespace AndreiiiH.OIDC
 {
     public sealed class TokenCache
     {

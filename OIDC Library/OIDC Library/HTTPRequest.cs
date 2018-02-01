@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace ChaoticPixel.OIDC
+namespace AndreiiiH.OIDC
 {
     public static class HttpRequest
     {

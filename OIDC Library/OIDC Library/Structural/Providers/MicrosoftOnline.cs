@@ -1,23 +1,13 @@
-﻿using ChaoticPixel.OIDC.Core;
-using ChaoticPixel.OIDC.Structural.Flows;
-using ChaoticPixel.OIDC.Structural.ProviderConfigs;
+﻿using AndreiiiH.OIDC.Structural.Flows;
+using AndreiiiH.OIDC.Structural.ProviderConfigs;
+using AndreiiiH.OIDC.Core;
 
-namespace ChaoticPixel.OIDC.Structural.Providers
+namespace AndreiiiH.OIDC.Structural.Providers
 {
     public class MicrosoftOnline : BaseProvider
     {
-        public MicrosoftOnline(MicrosoftOnlineConfig config, TokenCache tokenCache)
+        public MicrosoftOnline(MicrosoftOnlineConfig config, TokenCache tokenCache) : base(config, tokenCache)
         {
-            Config = config;
-            TokenCache = tokenCache;
-            
-            AuthorizationCode = new AuthorizationCode();
-            AuthorizationCode.OpenIdConfig = Config;
-            AuthorizationCode.TokenCache = TokenCache;
-            
-            ClientCredentials = new ClientCredentials();
-            ClientCredentials.OpenIdConfig = Config;
-            ClientCredentials.TokenCache = TokenCache;
         }
     }
 }

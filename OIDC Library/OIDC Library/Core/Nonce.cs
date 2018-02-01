@@ -2,12 +2,12 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ChaoticPixel.OIDC.Core
+namespace AndreiiiH.OIDC.Core
 {
     public static class Nonce
     {
-        private static Random _random = RandomProvider.GetThreadRandom();
-        private static DateTime _created = DateTime.UtcNow;
+        private static readonly Random _random = RandomProvider.GetThreadRandom();
+        private static readonly DateTime _created = DateTime.UtcNow;
 
         public static string Generate()
         {

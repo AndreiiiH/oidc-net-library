@@ -1,22 +1,12 @@
-﻿using ChaoticPixel.OIDC.Structural.Flows;
-using ChaoticPixel.OIDC.Structural.ProviderConfigs;
+﻿using AndreiiiH.OIDC.Structural.Flows;
+using AndreiiiH.OIDC.Structural.ProviderConfigs;
 
-namespace ChaoticPixel.OIDC.Structural.Providers
+namespace AndreiiiH.OIDC.Structural.Providers
 {
     public class CustomProvider : BaseProvider
     {
-        public CustomProvider(OpenIdConfig config, TokenCache tokenCache)
+        public CustomProvider(OpenIdConfig config, TokenCache tokenCache) : base(config, tokenCache)
         {
-            Config = config;
-            TokenCache = tokenCache;
-            
-            AuthorizationCode = new AuthorizationCode();
-            AuthorizationCode.OpenIdConfig = Config;
-            AuthorizationCode.TokenCache = TokenCache;
-            
-            ClientCredentials = new ClientCredentials();
-            ClientCredentials.OpenIdConfig = Config;
-            ClientCredentials.TokenCache = TokenCache;
         }
     }
 }

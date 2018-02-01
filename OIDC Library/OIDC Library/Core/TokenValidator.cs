@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 
-namespace ChaoticPixel.OIDC.Core
+namespace AndreiiiH.OIDC.Core
 {
     internal sealed class TokenValidator : IDisposable
     {
@@ -20,23 +20,15 @@ namespace ChaoticPixel.OIDC.Core
 
         public JwtSecurityToken Validate(string nonce)
         {
-            if (!ValidateNonce(nonce))
-            {
-                return null;
-            }
-            return ValidateSignature();
+            return !ValidateNonce(nonce) ? null : ValidateSignature();
         }
 
         private bool ValidateNonce(string nonce)
         {
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
             JwtSecurityToken token = handler.ReadToken(_token) as JwtSecurityToken;
-            string tokenNonce = token.Claims.First(claim => claim.Type == "nonce").Value;
-            if (nonce == tokenNonce)
-            {
-                return true;
-            }
-            return false;
+            string tokenNonce = token?.Claims.First(claim => claim.Type == "nonce").Value;
+            return nonce == tokenNonce;
         }
 
         private JwtSecurityToken ValidateSignature()
@@ -51,27 +43,28 @@ namespace ChaoticPixel.OIDC.Core
                 ValidateLifetime = true
             };
 
-            SecurityToken jwt;
-            ClaimsPrincipal principal = handler.ValidateToken(_token, validationParameters, out jwt);
+            ClaimsPrincipal principal = handler.ValidateToken(_token, validationParameters, out SecurityToken jwt);
             return jwt as JwtSecurityToken;
         }
 
         private bool disposedValue = false;
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (disposedValue)
             {
-                if (disposing)
-                {
-                    // No managed resources
-                }
-
-                _token = null;
-                _config = null;
-
-                disposedValue = true;
+                return;
             }
+            
+            if (disposing)
+            {
+                // No managed resources
+            }
+
+            _token = null;
+            _config = null;
+
+            disposedValue = true;
         }
 
         ~TokenValidator() {

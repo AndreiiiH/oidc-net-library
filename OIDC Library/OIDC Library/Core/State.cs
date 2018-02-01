@@ -5,13 +5,12 @@ using System.IdentityModel.Metadata;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using ChaoticPixel.OIDC.Cryptography;
+using AndreiiiH.OIDC.Cryptography;
 
-namespace ChaoticPixel.OIDC.Core
+namespace AndreiiiH.OIDC.Core
 {
     public static class State
     {
-        private static readonly DateTime _created = DateTime.UtcNow;
         private static readonly string _signature;
 
         static State()
@@ -35,12 +34,7 @@ namespace ChaoticPixel.OIDC.Core
             string[] stateParts = state.Split('$');
             int similarity = String.Compare(_signature, stateParts[1], StringComparison.CurrentCulture);
             
-            if (similarity == 0)
-            {
-                return stateParts[0];
-            }
-            
-            return String.Empty;
+            return similarity == 0 ? stateParts[0] : string.Empty;
         }
     }
 }
