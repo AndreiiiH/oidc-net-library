@@ -2,9 +2,9 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using ChaoticPixel.OIDC.Core;
+using AndreiiiH.OIDC.Core;
 
-namespace ChaoticPixel.OIDC.Cryptography
+namespace AndreiiiH.OIDC.Cryptography
 {
     public static class RS256
     {
@@ -39,13 +39,8 @@ namespace ChaoticPixel.OIDC.Cryptography
 
         public static byte[] Encrypt(byte[] data, byte[] key, byte[] initVector)
         {
-            using (Rijndael alg = Rijndael.Create())
+            using (Rijndael alg = GetRijndael(key, initVector))
             {
-                alg.Key = key;
-                alg.IV = initVector;
-                alg.Mode = CipherMode.CBC;
-                alg.Padding = PaddingMode.Zeros;
-
                 using (MemoryStream ms = new MemoryStream())
                 {
                     using (CryptoStream cs = new CryptoStream(ms, alg.CreateEncryptor(), CryptoStreamMode.Write))
@@ -81,13 +76,8 @@ namespace ChaoticPixel.OIDC.Cryptography
 
         public static byte[] Decrypt(byte[] data, byte[] key, byte[] initVector)
         {
-            using (Rijndael alg = Rijndael.Create())
+            using (Rijndael alg = GetRijndael(key, initVector))
             {
-                alg.Key = key;
-                alg.IV = initVector;
-                alg.Mode = CipherMode.CBC;
-                alg.Padding = PaddingMode.Zeros;
-
                 using (MemoryStream ms = new MemoryStream())
                 {
                     using (CryptoStream cs = new CryptoStream(ms, alg.CreateDecryptor(), CryptoStreamMode.Write))
@@ -112,6 +102,18 @@ namespace ChaoticPixel.OIDC.Cryptography
             }
 
             return new string(stringChars);
+        }
+
+        private static Rijndael GetRijndael(byte[] key, byte[] initVector)
+        {
+            Rijndael alg = Rijndael.Create();
+            
+            alg.Key = key;
+            alg.IV = initVector;
+            alg.Mode = CipherMode.CBC;
+            alg.Padding = PaddingMode.Zeros;
+
+            return alg;
         }
     }
 }

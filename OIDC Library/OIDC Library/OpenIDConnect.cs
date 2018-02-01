@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens;
-using ChaoticPixel.OIDC.Core;
-using ChaoticPixel.OIDC.Structural.ProviderConfigs;
-using ChaoticPixel.OIDC.Structural.Providers;
+using AndreiiiH.OIDC.Core;
+using AndreiiiH.OIDC.Structural.ProviderConfigs;
+using AndreiiiH.OIDC.Structural.Providers;
 
-namespace ChaoticPixel.OIDC
+namespace AndreiiiH.OIDC
 {
     public class OpenIdConnect
     {

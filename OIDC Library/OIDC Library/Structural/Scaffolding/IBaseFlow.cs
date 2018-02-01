@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ChaoticPixel.OIDC.Structural.Scaffolding
+namespace AndreiiiH.OIDC.Structural.Scaffolding
 {
     internal interface IBaseFlow
     {

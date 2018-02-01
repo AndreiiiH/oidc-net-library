@@ -7,7 +7,7 @@
     <ProjectGuid>{24FFAB26-93AF-4F48-851A-C257F8A10821}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ChaoticPixel.OIDC</RootNamespace>
+      <RootNamespace>AndreiiiH.OIDC</RootNamespace>
     <AssemblyName>OIDC Library</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
